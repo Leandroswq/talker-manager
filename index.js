@@ -13,8 +13,10 @@ app.get('/', (_request, response) => {
 });
 
 const talkerRouter = require('./routers/talker/index');
+const loginRouter = require('./routers/login/index.js');
 
 app.use('/talker', talkerRouter);
+app.use('/login', loginRouter);
 
 app.use((_err, _req, res, _next) => {
   res.status(HTTP_INTERNAL_SERVER_ERROR).send();
