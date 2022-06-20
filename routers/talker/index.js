@@ -93,7 +93,7 @@ const isNumberBetween = (number, min, max) => {
 
 const rateValidation = (req, res, next) => {
   const { rate } = req.body.talk;
-  if (!rate || rate === '') {
+  if (rate === undefined || rate === '') {
     res.status(HTTP_BAD_REQUEST_STATUS)
     .json({ message: 'O campo "rate" é obrigatório' });
   }
@@ -134,6 +134,24 @@ router.get('/:id', async (req, res, next) => {
   .json({ message: 'Pessoa palestrante não encontrada' });
   } catch (_err) {
     res.status(HTTP_NOT_FOUND_STATUS).send();
+  }
+  next(HTTP_INTERNAL_SERVER_ERROR);
+});
+
+router.put('/:id', tokenValidation, nameValidation, ageValidation,
+talkValidation, rateValidation, async (req, res, next) => {
+  const { name, age, talk } = req.body;
+  const { id } = req.params;
+  try {
+    const talkers = await readTalker();
+    const talker = talkers.find((element) => Number(element.id) === Number(id));
+    talker.age = age;
+    talker.talk = talk;
+    talker.name = name;
+    await fs.writeFile('talker.json', JSON.stringify(talkers));
+    res.status(HTTP_OK_STATUS).json(talker);
+  } catch (err) {
+    next(HTTP_INTERNAL_SERVER_ERROR);
   }
   next(HTTP_INTERNAL_SERVER_ERROR);
 });
