@@ -3,7 +3,8 @@ const moment = require('moment');
 const fs = require('fs').promises;
 const { HTTP_NOT_FOUND_STATUS, HTTP_OK_STATUS,
 HTTP_INTERNAL_SERVER_ERROR, HTTP_UNAUTHORIZED_STATUS,
- HTTP_BAD_REQUEST_STATUS, HTTP_CREATED_STATUS } = require('../../status');
+ HTTP_BAD_REQUEST_STATUS, HTTP_CREATED_STATUS,
+ HTTP_NO_CONTENT } = require('../../status');
 
 const router = express.Router();
  
@@ -150,6 +151,20 @@ talkValidation, rateValidation, async (req, res, next) => {
     talker.name = name;
     await fs.writeFile('talker.json', JSON.stringify(talkers));
     res.status(HTTP_OK_STATUS).json(talker);
+  } catch (err) {
+    next(HTTP_INTERNAL_SERVER_ERROR);
+  }
+  next(HTTP_INTERNAL_SERVER_ERROR);
+});
+
+router.delete('/:id', tokenValidation, async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const talkers = await readTalker();
+    const newTalkers = talkers
+    .filter((talker) => Number(talker.id) !== Number(id));
+    await fs.writeFile('talker.json', JSON.stringify(newTalkers));
+    res.status(HTTP_NO_CONTENT).send();
   } catch (err) {
     next(HTTP_INTERNAL_SERVER_ERROR);
   }
