@@ -123,6 +123,27 @@ router.post('/', tokenValidation, nameValidation,
   next(HTTP_INTERNAL_SERVER_ERROR);
 });
 
+router.get('/search', tokenValidation, async (req, res, next) => {
+  const { q } = req.query;
+  try {
+  const talkers = await readTalker();
+  
+  if (q === undefined || q === '') {
+    res.status(HTTP_OK_STATUS).json(talkers);
+  }
+
+  const filterTalker = talkers
+  .filter((talker) => talker.name.includes(q));
+  if (filterTalker.length === 0) {
+    res.status(HTTP_OK_STATUS).json([]);
+  }
+  res.status(HTTP_OK_STATUS).json(filterTalker);
+} catch (err) {
+  next(HTTP_INTERNAL_SERVER_ERROR);
+}
+next(HTTP_INTERNAL_SERVER_ERROR);
+});
+
 router.get('/:id', async (req, res, next) => {
   const { id } = req.params;
   try {
