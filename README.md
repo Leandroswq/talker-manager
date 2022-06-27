@@ -1,6 +1,6 @@
 # Projeto Talker Manager
 
-Esse é um projeto que permite de talkers (palestrantes).
+Esse que cria um cadstro de pessoas talkers (palestrantes)
 
 ## Objetivo
 - Testar meus conhecimentos em express
