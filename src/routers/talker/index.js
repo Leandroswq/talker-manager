@@ -19,16 +19,6 @@ const readTalker = async () => {
   return talkers;
 };
 
-router.get("/", async (_req, res, next) => {
-  try {
-    const talker = await readTalker();
-    res.status(HTTP_OK_STATUS).json(talker);
-  } catch (_err) {
-    res.status(HTTP_NOT_FOUND_STATUS).send();
-  }
-  next(HTTP_INTERNAL_SERVER_ERROR);
-});
-
 const tokenValidation = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
@@ -120,6 +110,18 @@ const rateValidation = (req, res, next) => {
 
   next();
 };
+
+
+router.get("/", tokenValidation, async (_req, res, next) => {
+  try {
+    const talker = await readTalker();
+    res.status(HTTP_OK_STATUS).json(talker);
+  } catch (_err) {
+    res.status(HTTP_NOT_FOUND_STATUS).send();
+  }
+  next(HTTP_INTERNAL_SERVER_ERROR);
+});
+
 router.post(
   "/",
   tokenValidation,
@@ -163,7 +165,7 @@ router.get("/search", tokenValidation, async (req, res, next) => {
   next(HTTP_INTERNAL_SERVER_ERROR);
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", tokenValidation ,async (req, res, next) => {
   const { id } = req.params;
   try {
     const talkers = await readTalker();
